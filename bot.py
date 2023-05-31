@@ -1,6 +1,6 @@
 import discord
 import responses
-
+import os
 
 # Send messages
 async def send_message(message, user_message, is_private):
@@ -13,10 +13,11 @@ async def send_message(message, user_message, is_private):
 
 
 def run_discord_bot():
-    TOKEN = 'MTExMzQ0MjUxMTc3MjQ2MzE3NA.GW8k5q.nJRB2RPSP51645xaJS-cQqfuXRV0pQ0ypiC5f4'
+    TOKEN = os.getenv("TORSKBOTTOKEN")
     intents = discord.Intents.default()
     intents.message_content = True
     client = discord.Client(intents=intents)
+
     @client.event
     async def on_ready():
         print(f'{client.user} is now running!')
