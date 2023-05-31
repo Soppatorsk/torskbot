@@ -15,7 +15,7 @@ async def send_message(message, user_message, is_private):
 def run_discord_bot():
     TOKEN = os.getenv("TORSKBOTTOKEN")
     intents = discord.Intents.default()
-    intents.message_content = True
+    intents.message_content = True 
     client = discord.Client(intents=intents)
 
     @client.event
@@ -36,12 +36,6 @@ def run_discord_bot():
         # Debug printing
         print(f"{username} said: '{user_message}' ({channel})")
 
-        # If the user message contains a '?' in front of the text, it becomes a private message
-        if user_message[0] == '?':
-            user_message = user_message[1:]  # [1:] Removes the '?'
-            await send_message(message, user_message, is_private=True)
-        else:
-            await send_message(message, user_message, is_private=False)
+        await send_message(message, user_message, is_private=False)
 
-    # Remember to run your bot with your personal TOKEN
     client.run(TOKEN)

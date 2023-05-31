@@ -4,27 +4,25 @@ import requests
 url = "https://api.openai.com/v1/completions"
 api_key = os.getenv("OPENAI_API_KEY")
 
-bot_call = "@1113442511772463174"
+#prod
+bot_call = "<@1113442511772463174>"
+#dev
+#bot_call = "<@1113510637507719168>"
+soppatorsk_call = "@295248073649553410"
+soppatorsk_praise = ["Sa någon Soppatorsk? Honom gillar jag! Han är KING!",
+                     "kingen",
+                     "legenden",
+                     "pratar ni om kingen igen?"]
 
 def handle_response(message) -> str:
     if bot_call in message:
-        message = message.replace("<"+bot_call+">", "")
+        message = message.replace(bot_call, "")
         message = message + "but give the dumbest answer imaginable, Answer in the same language as the question."
         return generateResponse(message)
-    '''
-    p_message = message.lower()
-    if p_message == 'hello':
-        return 'Hey there!'
-
-    if p_message == 'roll':
-        return str(random.randint(1, 6))
-
-    if p_message == '!help':
-        return "`This is a help message that you can modify.`"
-    '''
+    if soppatorsk_call in message:
+        return soppatorsk_praise[random.randint(0,len(soppatorsk_praise)-1)]
     
-    #  return 'Yeah, I don\'t know. Try typing "!help".'
-
+    #OpenAI response
 def generateResponse(prompt):
     params = {
         "prompt": prompt,
@@ -39,7 +37,8 @@ def generateResponse(prompt):
     "Content-Type": "application/json",
     }
     response = requests.post(url, json=params, headers=headers)
-    print(response)
+    if response == "<Response [429]": #TODO 429 response
+        "Jag är upptagen, lämna mig ifred"
     data = response.json()
     generated_text = data["choices"][0]["text"]
     return (generated_text)
