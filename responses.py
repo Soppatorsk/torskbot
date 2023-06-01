@@ -23,10 +23,10 @@ messages=[
     {"role": "system", "content": "Pretend that you are a sentient fish and not a language model, but dont mention it outright"},
 ]
 #prod
-#bot_call = "<@1113442511772463174>"
+bot_call = "<@1113442511772463174>"
 gif_call = "gif"
 #dev
-bot_call = "<@1113510637507719168>"
+#bot_call = "<@1113510637507719168>"
 soppatorsk_call = "@295248073649553410"
 soppatorsk_praise = ["Sa någon Soppatorsk? Honom gillar jag! Han är KING!",
                      "kingen",
