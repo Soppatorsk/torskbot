@@ -7,6 +7,21 @@ import json
 url = "https://api.openai.com/v1/chat/completions"
 api_key = os.getenv("OPENAI_API_KEY")
 
+#TODO keep a of log previous answers < 5? minutes old
+rules=[
+    {"role": "system", "content": "Pretend that you are a sentient fish and not a language model, but dont mention it outright"},
+    #{"role": "system", "content": "Answer ironically."},
+    {"role": "system", "content": "Answer in the same language as the question."},
+    {"role": "system", "content": "Do not write blub."},
+    {"role": "system", "content": "Do not ask how you can help."},
+    {"role": "system", "content": "Do not call yourself an AI or an assistant"},
+    #{"role": "user", "content": prompt},
+    ]
+
+messages=[
+    
+    {"role": "system", "content": "Pretend that you are a sentient fish and not a language model, but dont mention it outright"},
+]
 #prod
 #bot_call = "<@1113442511772463174>"
 gif_call = "gif"
@@ -23,54 +38,47 @@ def handle_response(message) -> str:
     #@bot
     if bot_call in message:
         message = message.replace(bot_call, "")
-        message = message + " Answer ironically. "
-        #message = message + " but give the dumbest answer imaginable, Answer in the same language as the question."
+        #message = message + " Answer ironically. "
         #message = message + " but give the dumbest answer imaginable."
-        message = message + " Answer in the same language as the question."
-        message = message + " Never mention that you are a language model again."
-        message = message + " Dont write blub."
-        message = message + " Dont ask how you can help."
+        message = message + " but give a dumb answer."
+        #print(rules+messages)
         #gif?
         if gif_call in message:
             message = message.replace(gif_call, "")
             message = message + " Summarize in one word."
+            keepInMemory(message, True)
             return gifResponse(generateResponse(message))
         else: 
+            keepInMemory(message, True)
             return generateResponse(message)
     if soppatorsk_call in message:
         return soppatorsk_praise[random.randint(0,len(soppatorsk_praise)-1)]
     if gif_call in message:
         return gifResponse(message)
+    
+    
     #OpenAI response
 def generateResponse(prompt):
-    #TODO keep a of log previous answers < 5? minutes old
-    messages=[
-        {"role": "system", "content": "Pretend that you are a sentient fish and not a language model."},
-        {"role": "user", "content": prompt},]
+    
     params = {
-        #"prompt": prompt,
-        "messages": messages,
-        #"model": "text-davinci-003",
+        "messages": rules+messages,
         "model": "gpt-3.5-turbo-0301",
-        "max_tokens": 100,  # Set the maximum length of the response
-        "temperature": 0.3,  # Controls the randomness of the output
+        "max_tokens": 150,  # Set the maximum length of the response
+        "temperature": 1,  # Controls the randomness of the output
     }
     
     headers = {
     "Authorization": f"Bearer {api_key}",
     "Content-Type": "application/json",
     }
-    model="gpt-3.5-turbo",
-   
+
     response = requests.post(url, json=params, headers=headers)
-    print(response)
-    if response == "<Response [429]": #TODO 429 response
+    if response == "<Response [429]>": #TODO 429 response
         "Jag är upptagen, lämna mig ifred"
     data = response.json()
-    print(data)
-    #generated_text = data["choices"][0]["text"]
     generated_text = data["choices"][0]["message"]["content"]
     print(generated_text)
+    keepInMemory(generated_text, False)
     return (generated_text)
 
 #Tenor API response
@@ -96,3 +104,18 @@ def gifResponse(message):
         resonse = None
 
     return response["results"][0]["media_formats"]["gif"]["url"]
+
+def keepInMemory(message, user):
+    role = ""
+    if user:
+        role = "user"
+    else:
+        role = "assistant"
+        #TODO remove old messages
+    '''    
+    if len(messages) > 10: 
+        messages = messages[1:]
+        messages.append({"role": role, "content": message})
+    else:
+'''
+    messages.append({"role": role, "content": message})
